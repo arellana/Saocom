@@ -1,0 +1,28 @@
+Pasos para aplicar algorito s0 en regiones con RVI < 0.3
+
+TODO ESTO EN ENTORNO envpyros
+Creo la mascara del RVI usando RVI_EC.ipynb
+Para esto necesito usar la imagen sacada del SNAP en HDF5, la cual aplico a la imagen original (SAOCOM) el grafo FilterM_EC_RVI, este aplica filtro de mediana en ventana 7x7 y
+corrige geometricamente con el rangeDoppler. ATENCION: Recordar el parametro de pixel spacing usado en este porque tiene que ser el mismo que use en el siguiente paso.
+A los datos de estos los cargo en RVI_EC.ipynb, este hace la conversion a binario segun: 1 si RVI < 0.3, 0 lo contrario.
+Sobre este filtro zonas en donde segun un tamaño de ventanas arbitrario, el promedio de un pixel y la ventana de cercano a 1. Por ultimo guardo el la imagen en 'Mascaras/anguil.txt'
+
+
+Busqueda manual de lotes:
+Con BusquedaLotes.py cargo los datos en 'Mascaras/anguil.txt' y elijo a mano los lotes que me interesan. Anoto los pixeles superior izquierdo segun [Y,X] y el inferior derecho. Esto los copio manualmente en Amp-phi.ipynb
+
+Analisis por lote:
+En Amp-phi.ipynb cargo los datos sacados de SNAP de la misma imagen original pero con el grafo FilterM_EC (speckle + correccion geometrica) ATENCION: Es importante que en los parámetros de la corrección geometrica tenga el mismo pixel spacing que el usado para la mascara.
+Cargo imagen de este: Terminados en Spk_EC.
+
+Genero histogramas que me den la media y la distribución de subpoligonos de cada lote. 
+En la sección "Submatrices" genero 100 cortes para HH y VV partiendo a la matriz original 10 filas y 10 columnas. (Hay un parametro "reescala" que al aumentar genera menos filas y menos columnas pero debe ser multiplo del tamaño original)
+A partir de histogramas ajusto mediante guaussiana para ver media y distribucion. Guardo la informcion de el valor medio de los angulos de incidencia para cada sublote y para el s0HH y s0VV a partir de la media de la distribucion de cada uno, de nuevo, en cada sublote. Esto se guarda en 3 archivos: 
+'Inferencia/InputsInferencia/angulos.txt'
+'Inferencia/InputsInferencia/S0HHVV.txt'
+'Inferencia/InputsInferencia/sigmasHHVV.txt'
+donde S0HHVV tiene 200 datos, los primeros 100 los correspondientes a los 100 HH y VV los siguientes. El orden corresponde a el orden de angulos. El archivo sigmasHHVV tiene la desviacion estandar de los ajustes, esta usada para la inferencia.
+
+Cambiar a entorno envpymc
+Inferencia:
+
